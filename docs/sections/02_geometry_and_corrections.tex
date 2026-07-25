@@ -1,0 +1,148 @@
+\section{Core geometric machinery}
+
+\subsection{Density matrices as structured states}
+
+A density matrix satisfies
+\[
+\rhoop=\rhoop^\dagger,\qquad \rhoop\succeq 0,\qquad \Tr(\rhoop)=1.
+\]
+Its spectral decomposition is
+\[
+\rhoop=\sum_a \lambda_a P_a,
+\]
+where $P_a$ projects onto an eigenspace, possibly of dimension greater than one. The spectrum encodes mixedness and invariant information under unitary conjugation. The eigenvectors encode orientation of the spectral subspaces.
+
+The von Neumann entropy is
+\begin{equation}
+S(\rhoop)=-\Tr(\rhoop\log\rhoop)=-\sum_i\lambda_i\log\lambda_i.
+\label{eq:entropy}
+\end{equation}
+It depends on the spectrum but does not uniquely identify it for general dimension.
+
+\subsection{Orbit-preserving motion}
+
+For a Hermitian generator $H$,
+\[
+X_H(\rhoop)=-i[H,\rhoop].
+\]
+This changes eigenvectors while preserving eigenvalues. Consequently,
+\[
+\frac{\dd}{\dd t}S(\rhoop(t))=0
+\]
+for a purely Hamiltonian trajectory. The geometric intuition is rotation along a fixed spectral leaf.
+
+\subsection{Dissipative motion}
+
+The dissipator in \cref{eq:gksl} can change populations, coherences, rank, and asymptotic state. A qubit amplitude-damping channel gives a familiar example. In Bloch coordinates,
+\[
+(x,y,z)\mapsto \left(\sqrt{1-p}\,x,\sqrt{1-p}\,y,(1-p)z+p\right).
+\]
+It is anisotropic: transverse components contract, while the state is translated toward the ground-state pole.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1.05,>=Latex]
+  \draw[thick,Navy] (0,0) circle (2.6);
+  \draw[Blue,dashed] (0,0) ellipse (2.15 and 0.75);
+  \draw[Blue,dashed] (0,0) ellipse (1.35 and 0.48);
+  \draw[->,very thick,Green] (-1.7,-0.1) arc[start angle=190,end angle=355,x radius=1.7,y radius=.62];
+  \draw[->,very thick,Red] (-1.45,-0.45) .. controls (-0.7,0.05) and (0.5,1.05) .. (0.35,2.35);
+  \node[Green,align=center] at (0,-1.35) {$X_H$: motion along\\an isospectral orbit};
+  \node[Red,align=left] at (3.5,1.15) {$X_D^{\perp}$: spectral change\\crossing orbit leaves};
+  \fill[Gold] (-1.45,-0.45) circle (2.5pt);
+  \fill[Red] (0.35,2.35) circle (2.5pt);
+  \node at (0,-3.15) {Conceptual Bloch-ball projection};
+\end{tikzpicture}
+\caption{Orbit-tangent and transverse intuition. A general dissipator can contain both components.}
+\label{fig:bloch}
+\end{figure}
+
+\subsection{Purification and Uhlmann transport}
+
+A full-rank density operator can be represented by an amplitude $W$ such that
+\[
+\rhoop=WW^\dagger.
+\]
+The representation is gauge-redundant because $WV$ gives the same density operator for any unitary $V$. Uhlmann parallel transport selects a horizontal relation between neighboring amplitudes \citep{uhlmann1986,uhlmann1991}. For a smooth horizontal lift, the manuscript uses a Hermitian generator $G$ satisfying the Lyapunov equation
+\begin{equation}
+G\rhoop+\rhoop G=\dot{\rhoop}.
+\label{eq:lyapunov}
+\end{equation}
+In the eigenbasis of $\rhoop$,
+\begin{equation}
+G_{ij}=\frac{\dot\rho_{ij}}{\lambda_i+\lambda_j},
+\label{eq:g_elements}
+\end{equation}
+provided the state is full rank.
+
+For a discretized path $\rho_0,\ldots,\rho_N$, a practical parallel-alignment rule uses the polar decomposition
+\[
+\sqrt{\rho_{k+1}}\sqrt{\rho_k}=U_k P_k,
+\]
+and accumulates the unitary factors $U_k$. For a closed path, their ordered product is a discrete holonomy estimate. It is path-dependent but not a complete, injective encoding of every possible path.
+
+\section{Mathematical corrections and proof obligations}
+
+\subsection{Degenerate spectra require spectral blocks}
+
+\begin{criticalbox}
+The condition ``all diagonal elements vanish in an eigenbasis'' is sufficient only in the non-degenerate case. When eigenvalues are degenerate, the basis inside each degenerate eigenspace is not unique. A basis-dependent diagonal test cannot characterize tangency.
+\end{criticalbox}
+
+Let
+\[
+\rhoop=\sum_a\lambda_a P_a
+\]
+with distinct eigenvalues indexed by $a$. A Hermitian velocity $X$ decomposes as
+\begin{align}
+X^{\perp} &= \sum_a P_a X P_a, \\
+X^{\parallel} &= \sum_{a\neq b}P_a X P_b.
+\label{eq:block_decomp}
+\end{align}
+The cross-block component belongs to the image of the commutator map and is tangent to the unitary orbit. The block-diagonal component is the obstruction to representing the full velocity as $-i[K,\rhoop]$. In a non-degenerate spectrum, each $P_a$ has rank one, and the criterion reduces to vanishing diagonal entries.
+
+\subsection{The dissipator is not automatically normal}
+
+A general Lindblad dissipator can rotate coherences and change eigenvalues simultaneously. Therefore,
+\[
+X_D=X_D^{\parallel}+X_D^{\perp}.
+\]
+This distinction is operationally important: ``dissipation exists'' and ``spectral structure changes'' are not equivalent statements. A dephasing channel, an amplitude-damping channel, and an engineered reservoir can have very different tangent/transverse compositions.
+
+\subsection{Entropy leaves are coarser than spectral orbits}
+
+\begin{criticalbox}
+A unitary orbit fixes the complete spectrum. Entropy is only one scalar function of that spectrum. Therefore, an orbit lies inside an entropy level set, but a general entropy level set contains many different orbits.
+\end{criticalbox}
+
+The correct relation is
+\[
+\mathcal O_{\rhoop}\subseteq \{\sigma:S(\sigma)=S(\rhoop)\},
+\]
+with equality only in special low-dimensional or constrained cases. This correction matters because a nonzero entropy derivative is a sufficient indicator of leaving the orbit, but a zero entropy derivative does not guarantee that the spectrum is unchanged.
+
+\subsection{A horizontal-unitary contradiction must be scoped carefully}
+
+The manuscript shows that a horizontal velocity of the particular form $\dot W=-i\Omega W$ vanishes under its conventions. This is not by itself a dissipation-specific theorem. The meaningful result is narrower: horizontal transport of amplitudes is not generally equivalent to applying an active unitary on the left, even when the base motion is unitary. A revised theorem should state exactly which action, bundle convention, and connection are used.
+
+\subsection{Curvature equivalence requires counterexample search}
+
+The proposed identity between nonzero mixed curvature and active spectral-coherence distortion is plausible as a diagnostic direction but not established merely by saying that two terms are structurally mismatched. A publishable proof should include:
+
+\begin{enumerate}
+  \item a coordinate-independent derivation of the connection and curvature;
+  \item a precise definition of the base Lie bracket and lifted generators;
+  \item proof of necessity and sufficiency, or a weaker one-direction implication;
+  \item symbolic checks in dimension two and three;
+  \item numerical searches for cancellation counterexamples;
+  \item explicit treatment of degeneracy crossings and rank-deficient boundaries.
+\end{enumerate}
+
+\subsection{Holonomy is compressed memory, not full history}
+
+Two different paths can yield the same holonomy. Gauge-invariant observables may further compress the result. The defensible statement is:
+
+\begin{quote}
+Holonomy can retain path-dependent information not contained in the instantaneous density matrix, but it is not generally a lossless or uniquely decodable chronological record.
+\end{quote}
+

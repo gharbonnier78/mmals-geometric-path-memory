@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: "MMALS Geometric Path Memory"
+message: "Please cite this repository if you reuse the engineering framework or interactive labs."
+type: software
+authors:
+  - family-names: Harbonnier
+    given-names: Guillaume
+version: 0.1.0
+date-released: 2026-07-25
+license: MIT
+repository-code: "https://github.com/gharbonnier78/mmals-geometric-path-memory"
+keywords:
+  - continual learning
+  - information geometry
+  - Lindblad dynamics
+  - Uhlmann holonomy
+  - MMALS
+  - domain shift

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Quantum Order Lab</title>
+<style>
+:root { font-family: Inter, system-ui, sans-serif; color-scheme: light dark; }
+body { margin: 0; background: #0e1422; color: #eef3ff; }
+header { padding: 24px clamp(18px, 5vw, 56px); background: linear-gradient(135deg, #17223b, #0e1422); }
+h1 { margin: 0 0 8px; font-size: clamp(1.7rem, 4vw, 3rem); }
+.subtitle { max-width: 900px; color: #c8d3eb; line-height: 1.5; }
+main { display: grid; grid-template-columns: minmax(260px, 360px) minmax(0, 1fr); gap: 18px; padding: 18px; }
+.panel { background: #151e31; border: 1px solid #2b3a58; border-radius: 16px; padding: 18px; box-shadow: 0 12px 30px rgba(0,0,0,.18); }
+.controls label { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin: 14px 0 5px; }
+input[type=range] { width: 100%; }
+button { border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+button.primary { background: #cfe0ff; color: #0c1830; }
+button.secondary { background: #273553; color: #eef3ff; }
+.buttonrow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+.canvasgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+canvas { width: 100%; aspect-ratio: 1.25; background: #0b1020; border-radius: 12px; border: 1px solid #2b3a58; }
+.metrics { display: grid; grid-template-columns: repeat(4, minmax(110px, 1fr)); gap: 10px; margin-top: 14px; }
+.metric { background: #0f1729; padding: 12px; border-radius: 12px; border: 1px solid #263550; }
+.metric strong { display: block; font-size: 1.35rem; margin-top: 4px; }
+.explain { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; margin-top: 14px; }
+.explain h3 { margin-top: 0; }
+small, .muted { color: #aebbd3; }
+code { background: #0b1020; padding: 2px 5px; border-radius: 5px; }
+.warning { margin-top: 12px; border-left: 4px solid #efb84f; padding: 10px 12px; background: #221d12; }
+@media (max-width: 900px) { main { grid-template-columns: 1fr; } .metrics { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 620px) { .canvasgrid, .explain { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Open Quantum Order Lab</h1>
+  <div class="subtitle">Explore why a coherent rotation followed by amplitude damping is generally different from damping followed by rotation. The display uses the Bloch-vector representation of a qubit and computes an order-sensitive trace-distance gap.</div>
+</header>
+<main>
+  <section class="panel controls">
+    <h2>Initial state</h2>
+    <label><span>Bloch x</span><output id="xOut"></output></label><input id="x" type="range" min="-0.85" max="0.85" step="0.01" value="0.55">
+    <label><span>Bloch y</span><output id="yOut"></output></label><input id="y" type="range" min="-0.85" max="0.85" step="0.01" value="0.25">
+    <label><span>Bloch z</span><output id="zOut"></output></label><input id="z" type="range" min="-0.85" max="0.85" step="0.01" value="-0.10">
+    <h2>Operations</h2>
+    <label><span>X-axis rotation</span><output id="thetaOut"></output></label><input id="theta" type="range" min="0" max="180" step="1" value="55">
+    <label><span>Damping probability</span><output id="pOut"></output></label><input id="p" type="range" min="0" max="0.90" step="0.01" value="0.35">
+    <label><span>Trajectory steps</span><output id="stepsOut"></output></label><input id="steps" type="range" min="5" max="80" step="1" value="35">
+    <div class="buttonrow">
+      <button class="primary" id="reset">Reset</button>
+      <button class="secondary" id="download">Export JSON</button>
+    </div>
+    <div class="warning"><strong>Research note.</strong> This is a pedagogical channel-order model, not a laboratory validation of the reviewed manuscript's full curvature theorem.</div>
+  </section>
+  <section>
+    <div class="canvasgrid">
+      <div class="panel"><h2>Rotation then damping</h2><canvas id="canvasAB" width="720" height="560"></canvas><small>Projection shown: x-z plane. The pale circle is the Bloch-ball boundary.</small></div>
+      <div class="panel"><h2>Damping then rotation</h2><canvas id="canvasBA" width="720" height="560"></canvas><small>Same initial state and operation strengths, different order.</small></div>
+    </div>
+    <div class="metrics">
+      <div class="metric"><span>Order gap</span><strong id="gap">-</strong><small>Trace distance</small></div>
+      <div class="metric"><span>Entropy R→D</span><strong id="entropyAB">-</strong><small>bits</small></div>
+      <div class="metric"><span>Entropy D→R</span><strong id="entropyBA">-</strong><small>bits</small></div>
+      <div class="metric"><span>Initial purity</span><strong id="purity">-</strong><small>Tr(ρ²)</small></div>
+    </div>
+    <div class="explain">
+      <article class="panel">
+        <h3>12-year-old view</h3>
+        <p>Imagine a marble inside a transparent ball. One machine spins the marble's direction. Another machine pulls it toward the top and makes its sideways motion smaller. Spinning first and pulling second does not usually end at the same place as pulling first and spinning second.</p>
+      </article>
+      <article class="panel">
+        <h3>Engineer view</h3>
+        <p>The two channels are affine maps on the Bloch vector. Their composition is order-sensitive because the rotation and anisotropic contraction/translation generally do not commute. The trace distance between the two final density matrices is an operationally meaningful order-gap metric.</p>
+      </article>
+    </div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const defaults = {x:0.55,y:0.25,z:-0.10,theta:55,p:0.35,steps:35};
+function clampState(v){ const n=Math.hypot(v.x,v.y,v.z); if(n>0.98){const s=0.98/n; return{x:v.x*s,y:v.y*s,z:v.z*s};} return v; }
+function rotateX(v, angle){ const c=Math.cos(angle), s=Math.sin(angle); return {x:v.x, y:c*v.y-s*v.z, z:s*v.y+c*v.z}; }
+function damp(v,p){ const q=Math.sqrt(1-p); return {x:q*v.x,y:q*v.y,z:(1-p)*v.z+p}; }
+function density(v){ return [[(1+v.z)/2, {re:v.x/2,im:-v.y/2}],[{re:v.x/2,im:v.y/2},(1-v.z)/2]]; }
+function eigvals(v){ const r=Math.min(1,Math.hypot(v.x,v.y,v.z)); return [(1+r)/2,(1-r)/2]; }
+function entropy(v){ return eigvals(v).reduce((a,l)=>l>1e-14?a-l*Math.log2(l):a,0); }
+function purity(v){ const r2=v.x*v.x+v.y*v.y+v.z*v.z; return (1+r2)/2; }
+function traceDistanceQubit(a,b){ return 0.5*Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z); }
+function interpolateOperation(start, op, steps){ const out=[start]; for(let i=1;i<=steps;i++) out.push(op(start,i/steps)); return out; }
+function pathAB(v,theta,p,steps){ const first=interpolateOperation(v,(s,t)=>rotateX(s,theta*t),steps); const r=first[first.length-1]; const second=interpolateOperation(r,(s,t)=>damp(s,p*t),steps); return first.concat(second.slice(1)); }
+function pathBA(v,theta,p,steps){ const first=interpolateOperation(v,(s,t)=>damp(s,p*t),steps); const r=first[first.length-1]; const second=interpolateOperation(r,(s,t)=>rotateX(s,theta*t),steps); return first.concat(second.slice(1)); }
+function draw(canvas,path,title){ const ctx=canvas.getContext('2d'); const w=canvas.width,h=canvas.height; ctx.clearRect(0,0,w,h); const cx=w/2,cy=h/2,r=Math.min(w,h)*0.38;
+ ctx.strokeStyle='#8293b7'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+ ctx.strokeStyle='#334567'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(cx-r-24,cy);ctx.lineTo(cx+r+24,cy);ctx.moveTo(cx,cy-r-24);ctx.lineTo(cx,cy+r+24);ctx.stroke();
+ ctx.fillStyle='#aebbd3'; ctx.font='20px system-ui';ctx.fillText('x',cx+r+12,cy-8);ctx.fillText('z',cx+10,cy-r-8);
+ ctx.strokeStyle='#7dc7ff';ctx.lineWidth=5;ctx.lineJoin='round';ctx.beginPath();path.forEach((v,i)=>{const px=cx+r*v.x,py=cy-r*v.z;if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);});ctx.stroke();
+ const first=path[0],last=path[path.length-1];
+ ctx.fillStyle='#ffe59a';ctx.beginPath();ctx.arc(cx+r*first.x,cy-r*first.z,9,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#ff8f8f';ctx.beginPath();ctx.arc(cx+r*last.x,cy-r*last.z,10,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#dbe6ff';ctx.font='18px system-ui';ctx.fillText(title,24,32);
+ ctx.fillStyle='#aebbd3';ctx.font='16px ui-monospace';ctx.fillText(`final = (${last.x.toFixed(3)}, ${last.y.toFixed(3)}, ${last.z.toFixed(3)})`,24,h-24);
+}
+function values(){ return {x:+$('x').value,y:+$('y').value,z:+$('z').value,theta:+$('theta').value,p:+$('p').value,steps:+$('steps').value}; }
+function update(){ let v=values(); const s=clampState(v); if(Math.abs(s.x-v.x)>1e-8||Math.abs(s.y-v.y)>1e-8||Math.abs(s.z-v.z)>1e-8){$('x').value=s.x;$('y').value=s.y;$('z').value=s.z;v={...v,...s};}
+ $('xOut').value=v.x.toFixed(2);$('yOut').value=v.y.toFixed(2);$('zOut').value=v.z.toFixed(2);$('thetaOut').value=`${v.theta}°`;$('pOut').value=v.p.toFixed(2);$('stepsOut').value=v.steps;
+ const theta=v.theta*Math.PI/180; const ab=pathAB(v,theta,v.p,v.steps); const ba=pathBA(v,theta,v.p,v.steps); const endAB=ab[ab.length-1],endBA=ba[ba.length-1];
+ draw($('canvasAB'),ab,'R → D');draw($('canvasBA'),ba,'D → R');
+ $('gap').textContent=traceDistanceQubit(endAB,endBA).toFixed(4);$('entropyAB').textContent=entropy(endAB).toFixed(4);$('entropyBA').textContent=entropy(endBA).toFixed(4);$('purity').textContent=purity(v).toFixed(4);
+ window.currentExport={parameters:v,initial:clampState(v),rotation_then_damping:endAB,damping_then_rotation:endBA,trace_distance_gap:traceDistanceQubit(endAB,endBA),entropy_bits:{rotation_then_damping:entropy(endAB),damping_then_rotation:entropy(endBA)}};
+}
+for(const id of ['x','y','z','theta','p','steps']) $(id).addEventListener('input',update);
+$('reset').addEventListener('click',()=>{Object.entries(defaults).forEach(([k,v])=>$(k).value=v);update();});
+$('download').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(window.currentExport,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='open-quantum-order-lab.json';a.click();URL.revokeObjectURL(a.href);});
+update();
+</script>
+</body>
+</html>

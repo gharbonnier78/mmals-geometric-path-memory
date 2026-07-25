@@ -1,0 +1,186 @@
+\section{Corrected engineering abstraction}
+
+The physics suggests a reusable systems pattern without claiming physical equivalence.
+
+\subsection{State, invariants, and regimes}
+
+Choose a structured state descriptor $Q_t$ that is positive and normalized:
+\[
+Q_t\succeq0,\qquad \Tr(Q_t)=1.
+\]
+Examples include:
+
+\begin{itemize}
+  \item normalized latent covariance for a neural-network host;
+  \item normalized error covariance for an EO/IR estimator;
+  \item normalized graph diffusion or risk operator for identity fraud;
+  \item normalized evidence-transition matrix for release governance.
+\end{itemize}
+
+The eigenstructure of $Q_t$ separates orientation and spectral allocation. A regime is not defined by a single scalar; it is represented by a neighborhood in a structured state space plus operational constraints.
+
+\subsection{Local decomposition}
+
+For a finite difference
+\[
+\Delta Q_t=Q_{t+1}-Q_t,
+\]
+compute spectral projectors $P_a$ of $Q_t$ and define
+\begin{align}
+\Delta Q_t^{\perp}&=\sum_aP_a\Delta Q_tP_a,\\
+\Delta Q_t^{\parallel}&=\Delta Q_t-\Delta Q_t^{\perp}.
+\end{align}
+A simple normalized structural-change score is
+\begin{equation}
+r_{\perp}(t)=\frac{\norm{\Delta Q_t^{\perp}}_F}{\norm{\Delta Q_t^{\parallel}}_F+\norm{\Delta Q_t^{\perp}}_F+\epsilon}.
+\label{eq:transverse_ratio}
+\end{equation}
+
+\subsection{Order sensitivity}
+
+For two update operators $A$ and $B$, compare
+\begin{align}
+Q_{AB}&=(B\circ A)(Q_0),\\
+Q_{BA}&=(A\circ B)(Q_0).
+\end{align}
+Candidate metrics include
+\begin{align}
+O_{\mathrm{end}}&=\norm{Q_{AB}-Q_{BA}}_F,\\
+O_{\mathrm{map}}&=\norm{AB-BA}_F,\\
+O_{\mathrm{task}}&=\left|\mathcal L(Q_{AB})-\mathcal L(Q_{BA})\right|.
+\end{align}
+The endpoint gap, map commutator, and task loss answer different questions and should be retained separately.
+
+\subsection{Composite decision score}
+
+A practical controller may combine geometry with established signals:
+\begin{equation}
+R_t=w_EE_t+w_UU_t+w_Tr_{\perp}(t)+w_OO_t+w_DD_t+w_CC_t,
+\label{eq:control_score}
+\end{equation}
+where $E_t$ is routing energy, $U_t$ uncertainty, $O_t$ order sensitivity, $D_t$ drift evidence, and $C_t$ operational cost or constraint pressure. The weights must be calibrated on downstream outcomes, not selected only for geometric elegance.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.25cm and 1.1cm,>=Latex,every node/.style={font=\small}]
+\node[draw,rounded corners,fill=Sky,minimum width=3.2cm,minimum height=1cm] (data) {Observations / latent features};
+\node[draw,rounded corners,fill=LightGray,right=of data,minimum width=3.0cm,minimum height=1cm] (state) {$Q_t$: structured state};
+\node[draw,rounded corners,fill=Warm,right=of state,minimum width=3.1cm,minimum height=1cm] (decomp) {$\Delta Q^{\parallel},\Delta Q^{\perp}$};
+\node[draw,rounded corners,fill=LightGray,below=of state,minimum width=3.0cm,minimum height=1cm] (path) {Order / path metrics};
+\node[draw,rounded corners,fill=Sky,right=of path,minimum width=3.1cm,minimum height=1cm] (decision) {Decision fusion $R_t$};
+\node[draw,diamond,aspect=2.0,fill=green!10,right=of decision] (action) {Action};
+\draw[->,thick] (data)--(state);
+\draw[->,thick] (state)--(decomp);
+\draw[->,thick] (state)--(path);
+\draw[->,thick] (decomp)--(decision);
+\draw[->,thick] (path)--(decision);
+\draw[->,thick] (decision)--(action);
+\node[align=center,below=0.8cm of action] {adapt host / reroute / split / merge\\replay / review / defer};
+\end{tikzpicture}
+\caption{Path-sensitive engineering control loop. Geometry augments rather than replaces domain evidence.}
+\label{fig:control_loop}
+\end{figure}
+
+\section{Priority application: MMALS}
+
+\subsection{Why the mapping is useful}
+
+MMALS must discover, merge, split, and refine regimes without relying on a task identifier. Its central difficulty is deciding whether incoming data belongs to:
+
+\begin{itemize}
+  \item a known regime requiring plastic adaptation;
+  \item a known regime seen under benign reorientation;
+  \item a mixed or ambiguous region requiring multi-host routing;
+  \item a genuinely new regime requiring structural expansion;
+  \item a harmful transition causing forgetting or representational collapse.
+\end{itemize}
+
+The tangent/transverse decomposition gives a candidate diagnostic language for this decision.
+
+\subsection{Density-like representation state}
+
+For latent vectors $z_1,\ldots,z_m\in\R^d$, define
+\begin{align}
+\mu_t &= \frac1m\sum_{i=1}^m z_i,\\
+\Sigma_t &= \frac{1}{m-1}\sum_{i=1}^m(z_i-\mu_t)(z_i-\mu_t)^\top,\\
+\rhoop_t &= \frac{\Sigma_t+\epsilon I}{\Tr(\Sigma_t+\epsilon I)}.
+\label{eq:mmals_density}
+\end{align}
+Alternative operators may be built from Fisher information, prototype Gram matrices, activation kernels, or class-conditional covariance. The covariance version is the simplest starting point because it is interpretable and computationally tractable.
+
+\begin{table}[H]
+\centering
+\caption{Quantum-to-MMALS translation table}
+\begin{tabularx}{\textwidth}{p{0.25\textwidth} X X}
+\toprule
+\textbf{Geometric concept} & \textbf{MMALS interpretation} & \textbf{Operational question} \\
+\midrule
+Eigenvectors & Principal latent directions & Did the representation mainly rotate? \\
+Eigenvalues & Capacity or variance allocation & Did specialization or collapse redistribute capacity? \\
+Isospectral motion & Reorientation inside a regime & Can the current host adapt safely? \\
+Spectral-block motion & Structural regime change & Should the router create, split, merge, or protect a host? \\
+Entropy & Effective latent diversity & Is diversity increasing, concentrating, or collapsing? \\
+Path order & Curriculum/interference history & Does learning $A$ then $B$ differ from $B$ then $A$? \\
+Holonomy-inspired metric & Compressed path signature & Is there useful history beyond endpoint accuracy? \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Controller design}
+
+A possible host decision table is shown in \cref{tab:mmals_decisions}.
+
+\begin{table}[H]
+\centering
+\caption{Illustrative MMALS actions}
+\label{tab:mmals_decisions}
+\begin{tabularx}{\textwidth}{p{0.16\textwidth} p{0.17\textwidth} p{0.18\textwidth} X}
+\toprule
+$r_\perp$ & Router confidence & Retention risk & Suggested action \\
+\midrule
+Low & High & Low & Adapt current host; monitor only \\
+Low & Low & Medium & Soft multi-host routing; collect evidence \\
+High & High prototype match & Medium & Reroute to known host or evaluate merge \\
+High & Low & High & Create/split host; protected replay; human review \\
+Any & Any & High order gap & Run curriculum permutation and interference tests \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{MMALS-Holo experiment matrix}
+
+\begin{longtable}{p{0.16\textwidth} p{0.21\textwidth} p{0.25\textwidth} p{0.27\textwidth}}
+\caption{Research protocol}\label{tab:protocol}\\
+\toprule
+\textbf{Axis} & \textbf{Values} & \textbf{Measurements} & \textbf{Purpose} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Axis} & \textbf{Values} & \textbf{Measurements} & \textbf{Purpose} \\
+\midrule
+\endhead
+Dataset & RotatedMNIST, PermutedMNIST, SplitCIFAR-10/100, CORe50 & Accuracy, average forgetting, backward transfer, calibration & Cover benign rotation, permutation, class split, and real drift \\
+Order & Original, reversed, random permutations, adversarial curricula & Endpoint gap, commutator proxy, retention delta & Test whether path metrics explain curriculum sensitivity \\
+State operator & Covariance, Fisher, prototype Gram, class-conditional blocks & $r_\perp$, entropy, Bures/Fisher-Rao, MMD & Identify the most predictive geometry \\
+Router & Oracle, clustering, energy router, MMALS router & routing accuracy, host utilization, false split/merge & Separate geometry quality from router quality \\
+Memory & None, replay, EWC, functional memory & forgetting and memory cost & Test whether path alerts improve protection decisions \\
+Ablation & No geometry, permuted blocks, random projectors & predictive value and false alarms & Detect spurious correlation \\
+\bottomrule
+\end{longtable}
+
+\subsection{Primary falsifiable hypotheses}
+
+\begin{researchbox}
+\textbf{H1 - Structural prediction.} The integrated transverse energy
+\[
+E_\perp=\sum_t\norm{\Delta\rhoop_t^\perp}_F
+\]
+predicts future forgetting better than entropy change alone.
+
+\textbf{H2 - Order sensitivity.} The endpoint order gap between curriculum permutations predicts asymmetric backward transfer.
+
+\textbf{H3 - Decision value.} A router using geometry only when it changes an operational action improves retention-cost trade-offs compared with an always-on geometric penalty.
+
+\textbf{H4 - Non-equivalence.} MMD, Bures/Fisher-Rao, and tangent/transverse scores provide complementary rather than redundant signals.
+\end{researchbox}
+

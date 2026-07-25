@@ -1,0 +1,140 @@
+\section{Application to EO/IR domain shift}
+
+For EO/IR geolocation and tracking, let $\Sigma_t$ represent an error covariance over position, attitude, timing, boresight, terrain intersection, or fused state. Normalize it to $Q_t$. Then:
+
+\begin{itemize}
+  \item a rotation of uncertainty axes caused by a platform maneuver can be mainly orientation change;
+  \item growth of one eigenvalue due to blur, thermal noise, poor texture, or degraded GNSS is structural spectral change;
+  \item two fault sequences can end with similar CEP50 yet have different recoverability and residual bias;
+  \item a path metric can complement Fisher information, Cramer-Rao bounds, CEP50, and MMD-based sample shift.
+\end{itemize}
+
+\subsection{Relationship to Fisher-Rao and MMD}
+
+\begin{table}[H]
+\centering
+\caption{Complementary domain-shift lenses}
+\begin{tabularx}{\textwidth}{p{0.2\textwidth} X X}
+\toprule
+\textbf{Tool} & \textbf{What it measures} & \textbf{Engineering use} \\
+\midrule
+MMD \citep{gretton2012} & Difference between sample distributions in an RKHS & Detect that observed data changed \\
+Fisher-Rao / Bures \citep{amari2016,hubner1992} & Geometric displacement inside a statistical model/state manifold & Measure model-relative distinguishability and uncertainty movement \\
+Tangent/transverse split & Orientation change versus spectral-block redistribution & Classify benign reorientation versus structural degradation \\
+Path-order metric & Non-commutativity of fault or adaptation sequences & Detect history effects hidden by similar endpoints \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+A useful EO/IR study would simulate identical final covariance traces produced by different sequences: blur then stabilization, stabilization then blur, timing drift then map correction, and reversed order. The question is not whether a quantum holonomy literally occurs, but whether an ordered geometric signature improves failure diagnosis or recovery prediction.
+
+\section{Application to identity and credential fraud}
+
+Identity fraud is path-dependent by nature. A final profile can appear individually plausible while its construction history is anomalous. Let $G_t$ be a temporal identity graph and let $Q_t$ summarize diffusion, reuse, or risk concentration across identity, device, credential, telco, document, and biometric nodes.
+
+Candidate path-sensitive signals include:
+
+\begin{itemize}
+  \item order of address, device, SIM, and document changes;
+  \item repeated transitions between enrollment and recovery channels;
+  \item credential reuse followed by biometric replacement;
+  \item graph-community changes before and after high-risk events;
+  \item exclusion trajectories in which legitimate citizens are repeatedly rejected by an unsuitable process.
+\end{itemize}
+
+A combined risk score can be written
+\[
+R_t=w_sS_{\mathrm{sup}}+w_aS_{\mathrm{anom}}+w_gS_{\mathrm{graph}}+w_pS_{\mathrm{path}}+w_dS_{\mathrm{drift}}.
+\]
+The path component should be explainable as event sequences, graph motifs, and counterfactual order tests. It must not become an opaque justification for surveillance or exclusion.
+
+\begin{engineerbox}
+The useful lesson is not ``use quantum fraud detection.'' It is ``do not score only the final snapshot.'' Maintain a versioned event graph, compare plausible construction paths, identify non-commuting high-risk transitions, and preserve human review for adverse decisions.
+\end{engineerbox}
+
+\section{Application to STRAT-Q and Test Authority}
+
+Two releases can have similar final dashboards while possessing very different evidence histories. A release that accumulated representative evidence progressively is not equivalent to one that reached the same KPI through late waivers, partial reruns, and non-representative environments.
+
+Define a release state $Q_t$ from requirements, risks, test evidence, environment representativity, defect transitions, and decision confidence. Path-aware governance asks:
+
+\begin{itemize}
+  \item Did the evidence mature before or after critical design decisions?
+  \item Were defects closed before or after environment changes?
+  \item Did a waiver precede a test reduction, or did a test reduction create the waiver need?
+  \item Were requirements changed after evidence was generated?
+  \item Can the release state be replayed from versioned events?
+\end{itemize}
+
+This maps naturally to the planned OTEL spec-to-evidence backbone, XES/OCEL event models, XRAY evidence, and reproducible decision packages.
+
+\subsection{C-level wording}
+
+Avoid quantum terminology in executive governance. Use:
+
+\begin{quote}
+\textbf{Path-aware decision and evidence integrity:} release confidence considers not only current KPI values, but also the sequence, provenance, representativity, and reversibility of the evidence that produced them.
+\end{quote}
+
+\section{Quantum engineering learning path}
+
+This topic is valuable for the user's three-to-five-year quantum roadmap because it connects linear algebra, Lie groups, differential geometry, quantum information, and open-system control.
+
+\subsection{Prerequisite chain}
+
+\begin{enumerate}[label=\arabic*.]
+  \item Complex vector spaces, Hermitian matrices, eigenvalues, tensor products.
+  \item Density matrices, partial trace, purification, completely positive maps.
+  \item Lie groups and Lie algebras: $U(n)$, commutators, adjoint and coadjoint actions.
+  \item Differential geometry: tangent spaces, bundles, connections, curvature, holonomy.
+  \item Information geometry: Fisher metric, Bures metric, distinguishability.
+  \item Open quantum dynamics: GKSL generators, decoherence, engineered reservoirs.
+  \item Numerical methods: matrix exponentials, Lyapunov equations, polar decompositions.
+\end{enumerate}
+
+\subsection{Full practical lab}
+
+The repository contains a first notebook. The next physical-computing lab should include:
+
+\begin{enumerate}
+  \item exact and numerical amplitude damping of a qubit;
+  \item Bloch-ball trajectory and entropy evolution;
+  \item tangent/transverse projection in the instantaneous eigenbasis;
+  \item solution of \cref{eq:lyapunov};
+  \item closed loops with discrete Uhlmann transport;
+  \item a qutrit with controlled degeneracy splitting;
+  \item sensitivity to ancilla noise and finite sampling;
+  \item symbolic and numerical tests of proposed curvature identities.
+\end{enumerate}
+
+\section{Interactive tools}
+
+Two standalone browser tools are included.
+
+\subsection{Open Quantum Order Lab}
+
+\texttt{tools/open\_quantum\_order\_lab.html} visualizes a qubit in the Bloch $x$-$z$ projection. Sliders control the initial state, rotation, damping probability, and trajectory resolution. It compares rotation-then-damping with damping-then-rotation and reports:
+
+\begin{itemize}
+  \item trace-distance order gap;
+  \item final entropy in both orders;
+  \item initial purity;
+  \item final Bloch vectors;
+  \item exportable JSON evidence.
+\end{itemize}
+
+\subsection{MMALS Path Memory Lab}
+
+\texttt{tools/mmals\_path\_memory\_lab.html} uses a $2\times2$ covariance ellipse. Operation A rotates the representation. Operation B applies anisotropic scale and shear. It displays:
+
+\begin{itemize}
+  \item $A\rightarrow B$ and $B\rightarrow A$ ellipses;
+  \item normalized endpoint gap;
+  \item map commutator norm;
+  \item tangent/transverse proxy ratio;
+  \item entropy delta;
+  \item a threshold-based MMALS action recommendation.
+\end{itemize}
+
+Both tools are dependency-free HTML files and can be opened offline.
+

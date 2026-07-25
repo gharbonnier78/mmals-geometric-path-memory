@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MMALS Path Memory Lab</title>
+<style>
+:root { font-family: Inter, system-ui, sans-serif; color-scheme: light dark; }
+body { margin: 0; background: #f2f4f8; color: #152238; }
+header { padding: 28px clamp(18px, 5vw, 60px); background: #14243e; color: white; }
+h1 { margin: 0 0 8px; font-size: clamp(1.7rem, 4vw, 3rem); }
+header p { max-width: 980px; line-height: 1.55; color: #d7e3f8; }
+main { padding: 18px; display: grid; grid-template-columns: minmax(270px, 360px) minmax(0,1fr); gap: 18px; }
+.panel { background: white; border-radius: 16px; padding: 18px; box-shadow: 0 8px 24px rgba(18,35,62,.10); border: 1px solid #dce3ee; }
+.controls label { display:grid; grid-template-columns:1fr auto; gap:8px; margin:14px 0 5px; }
+input[type=range]{width:100%;}
+.canvasgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+canvas{width:100%;aspect-ratio:1.25;background:#fbfcff;border:1px solid #dce3ee;border-radius:12px;}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:10px;margin-top:14px;}
+.metric{background:#eef3fa;border-radius:12px;padding:12px;border:1px solid #d4deeb;}
+.metric strong{display:block;font-size:1.3rem;margin-top:4px;}
+.decision{margin-top:14px;padding:16px;border-radius:12px;background:#14243e;color:white;}
+.explain{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px;}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;background:#14243e;color:white;}
+.buttonrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+.muted,small{color:#5d6d84;}
+.formula{font-family:ui-monospace,monospace;background:#eef3fa;padding:10px;border-radius:10px;overflow:auto;}
+@media(max-width:900px){main{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.canvasgrid,.explain{grid-template-columns:1fr}}
+@media(prefers-color-scheme:dark){body{background:#0e1422;color:#eef3ff}.panel{background:#151e31;border-color:#2b3a58}.metric,.formula{background:#0f1729;border-color:#263550}.muted,small{color:#aebbd3}canvas{background:#0b1020;border-color:#2b3a58}}
+</style>
+</head>
+<body>
+<header>
+<h1>MMALS Path Memory Lab</h1>
+<p>Model a host representation by a 2×2 covariance operator. Operation A rotates the representation basis; operation B applies anisotropic adaptation and forgetting. Compare A→B with B→A, inspect spectral change, and decide whether the transition looks like within-host adaptation or a structural regime change.</p>
+</header>
+<main>
+<section class="panel controls">
+<h2>Initial representation</h2>
+<label><span>Principal variance 1</span><output id="l1Out"></output></label><input id="l1" type="range" min="0.15" max="1.60" step="0.01" value="1.10">
+<label><span>Principal variance 2</span><output id="l2Out"></output></label><input id="l2" type="range" min="0.10" max="1.30" step="0.01" value="0.38">
+<label><span>Initial orientation</span><output id="phiOut"></output></label><input id="phi" type="range" min="-90" max="90" step="1" value="20">
+<h2>Operation A: reorientation</h2>
+<label><span>Rotation</span><output id="thetaOut"></output></label><input id="theta" type="range" min="-100" max="100" step="1" value="45">
+<h2>Operation B: adaptation</h2>
+<label><span>Scale axis 1</span><output id="sxOut"></output></label><input id="sx" type="range" min="0.45" max="1.55" step="0.01" value="1.20">
+<label><span>Scale axis 2</span><output id="syOut"></output></label><input id="sy" type="range" min="0.35" max="1.55" step="0.01" value="0.70">
+<label><span>Shear/interference</span><output id="shearOut"></output></label><input id="shear" type="range" min="-0.75" max="0.75" step="0.01" value="0.24">
+<label><span>Structural-change threshold</span><output id="thresholdOut"></output></label><input id="threshold" type="range" min="0.10" max="0.80" step="0.01" value="0.35">
+<div class="buttonrow"><button id="reset">Reset</button><button id="download">Export JSON</button></div>
+</section>
+<section>
+<div class="canvasgrid">
+<div class="panel"><h2>A then B</h2><canvas id="ab" width="720" height="560"></canvas><small>Rotation followed by anisotropic adaptation.</small></div>
+<div class="panel"><h2>B then A</h2><canvas id="ba" width="720" height="560"></canvas><small>Same operations in reversed order.</small></div>
+</div>
+<div class="metrics">
+<div class="metric"><span>Order gap</span><strong id="gap">-</strong><small>Frobenius distance</small></div>
+<div class="metric"><span>Map commutator</span><strong id="comm">-</strong><small>||AB−BA||F</small></div>
+<div class="metric"><span>Transverse ratio</span><strong id="transverse">-</strong><small>spectral-change proxy</small></div>
+<div class="metric"><span>Entropy delta</span><strong id="entropy">-</strong><small>bits, A→B</small></div>
+</div>
+<div class="decision" id="decision"></div>
+<div class="explain">
+<article class="panel"><h3>12-year-old view</h3><p>Imagine a stretchy rubber net. Turning it and then stretching it gives a different net from stretching it first and turning it afterward. If its long and short directions change a lot, MMALS may need a new specialist. If it mostly turns, the same specialist can probably adapt.</p></article>
+<article class="panel"><h3>Engineer view</h3><p>We encode a representation covariance as a trace-normalized positive operator. Eigenvectors describe latent directions; eigenvalues describe capacity distribution. Orientation change is a tangent-like proxy, while spectral redistribution is a transverse proxy. The order gap exposes curriculum sensitivity that endpoint accuracy alone may miss.</p></article>
+</div>
+<div class="panel" style="margin-top:14px"><h3>Working abstraction</h3><div class="formula">ρ = Σ / Tr(Σ), &nbsp; Δρ = Δρ∥ + Δρ⊥, &nbsp; order_gap = ||ρAB − ρBA||F</div><p class="muted">This is a research abstraction. It does not assert that a neural network is literally a quantum system.</p></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);const d={l1:1.10,l2:.38,phi:20,theta:45,sx:1.20,sy:.70,shear:.24,threshold:.35};
+function rot(a){const c=Math.cos(a),s=Math.sin(a);return [[c,-s],[s,c]];}function mul(a,b){return [[a[0][0]*b[0][0]+a[0][1]*b[1][0],a[0][0]*b[0][1]+a[0][1]*b[1][1]],[a[1][0]*b[0][0]+a[1][1]*b[1][0],a[1][0]*b[0][1]+a[1][1]*b[1][1]]];}function tr(a){return a[0][0]+a[1][1];}function T(a){return [[a[0][0],a[1][0]],[a[0][1],a[1][1]]];}function add(a,b){return [[a[0][0]+b[0][0],a[0][1]+b[0][1]],[a[1][0]+b[1][0],a[1][1]+b[1][1]]];}function sub(a,b){return [[a[0][0]-b[0][0],a[0][1]-b[0][1]],[a[1][0]-b[1][0],a[1][1]-b[1][1]]];}function scale(a,s){return a.map(r=>r.map(x=>x*s));}function frob(a){return Math.hypot(a[0][0],a[0][1],a[1][0],a[1][1]);}function congr(m,s){return mul(m,mul(s,T(m)));}function normTrace(s){return scale(s,1/tr(s));}
+function eig(s){const a=s[0][0],b=(s[0][1]+s[1][0])/2,d=s[1][1],mid=(a+d)/2,q=Math.sqrt(((a-d)/2)**2+b*b);return [mid+q,mid-q];}function entropy(s){return eig(normTrace(s)).reduce((a,l)=>l>1e-12?a-l*Math.log2(l):a,0);}function angleOf(s){return .5*Math.atan2(2*s[0][1],s[0][0]-s[1][1]);}
+function initial(v){const r=rot(v.phi*Math.PI/180);return congr(r,[[v.l1,0],[0,v.l2]]);}function maps(v){const A=rot(v.theta*Math.PI/180);const B=[[v.sx,v.shear],[0,v.sy]];return{A,B};}
+function applyMap(m,s){return congr(m,s);}function seq(v){const s0=initial(v),{A,B}=maps(v);const sab=applyMap(B,applyMap(A,s0)),sba=applyMap(A,applyMap(B,s0));return{s0,sab,sba,A,B};}
+function decomposition(before,after){const ev=eig(before),phi=angleOf(before),r=rot(phi),rb=T(r),delta=sub(after,before),db=mul(rb,mul(delta,r));const normal=mul(r,mul([[db[0][0],0],[0,db[1][1]]],rb));const tangent=sub(delta,normal);const nt=frob(normal),tt=frob(tangent);return{normal,tangent,ratio:nt/(nt+tt+1e-12),normalEnergy:nt,tangentEnergy:tt,eigenvalues:ev};}
+function draw(canvas,s0,sf,label){const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.strokeStyle='#c8d4e5';ctx.lineWidth=1;for(let i=1;i<8;i++){ctx.beginPath();ctx.moveTo(i*w/8,30);ctx.lineTo(i*w/8,h-30);ctx.moveTo(30,i*h/8);ctx.lineTo(w-30,i*h/8);ctx.stroke();}const mats=[[s0,'#7d8da8',3],[sf,'#1c6f9f',6]];mats.forEach(([s,color,lw])=>{const vals=eig(s),a=angleOf(s),rx=170*Math.sqrt(vals[0]),ry=170*Math.sqrt(vals[1]);ctx.save();ctx.translate(w/2,h/2);ctx.rotate(-a);ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,Math.PI*2);ctx.stroke();ctx.restore();});ctx.fillStyle=getComputedStyle(document.body).color;ctx.font='18px system-ui';ctx.fillText(label,22,30);ctx.font='16px ui-monospace';const e=eig(normTrace(sf));ctx.fillText(`spectrum = [${e[0].toFixed(3)}, ${e[1].toFixed(3)}]`,22,h-24);}
+function values(){return Object.fromEntries(Object.keys(d).map(k=>[k,+$(k).value]));}function update(){const v=values();$('l1Out').value=v.l1.toFixed(2);$('l2Out').value=v.l2.toFixed(2);$('phiOut').value=`${v.phi}°`;$('thetaOut').value=`${v.theta}°`;$('sxOut').value=v.sx.toFixed(2);$('syOut').value=v.sy.toFixed(2);$('shearOut').value=v.shear.toFixed(2);$('thresholdOut').value=v.threshold.toFixed(2);const q=seq(v),dec=decomposition(q.s0,q.sab);draw($('ab'),q.s0,q.sab,'initial (thin) → final (thick)');draw($('ba'),q.s0,q.sba,'initial (thin) → final (thick)');const gap=frob(sub(normTrace(q.sab),normTrace(q.sba))),comm=frob(sub(mul(q.A,q.B),mul(q.B,q.A))),ed=entropy(q.sab)-entropy(q.s0);$('gap').textContent=gap.toFixed(4);$('comm').textContent=comm.toFixed(4);$('transverse').textContent=dec.ratio.toFixed(3);$('entropy').textContent=(ed>=0?'+':'')+ed.toFixed(4);let msg;if(dec.ratio>=v.threshold)msg='<strong>Structural alert:</strong> spectral redistribution dominates. Evaluate host creation, split/merge, protected replay, or human review of the regime assignment.';else if(dec.tangentEnergy>1e-5)msg='<strong>Within-regime adaptation:</strong> reorientation dominates. Prefer in-host plasticity while monitoring order-sensitive interference and retention.';else msg='<strong>Stable state:</strong> no meaningful representation change.';$('decision').innerHTML=msg;window.currentExport={parameters:v,initial:q.s0,A_then_B:q.sab,B_then_A:q.sba,metrics:{order_gap:gap,map_commutator_norm:comm,transverse_ratio:dec.ratio,entropy_delta_bits:ed,tangent_energy:dec.tangentEnergy,transverse_energy:dec.normalEnergy},recommendation:msg.replace(/<[^>]*>/g,'')};}
+Object.keys(d).forEach(id=>$(id).addEventListener('input',update));$('reset').addEventListener('click',()=>{Object.entries(d).forEach(([k,v])=>$(k).value=v);update();});$('download').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(window.currentExport,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mmals-path-memory-lab.json';a.click();URL.revokeObjectURL(a.href);});update();
+</script>
+</body>
+</html>

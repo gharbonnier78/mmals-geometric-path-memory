@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive labs and report for MMALS geometric path memory.">
+  <title>MMALS Geometric Path Memory</title>
+  <style>
+    :root { color-scheme: light dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    body { margin: 0; background: #10131a; color: #f4f6fb; }
+    main { max-width: 980px; margin: 0 auto; padding: 64px 24px; }
+    h1 { font-size: clamp(2.2rem, 6vw, 4.8rem); line-height: 1.02; margin: 0 0 20px; }
+    .lead { max-width: 760px; color: #c8cfdf; font-size: 1.15rem; line-height: 1.65; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 18px; margin-top: 40px; }
+    .card { border: 1px solid #333b4d; border-radius: 18px; padding: 24px; background: #171c26; box-shadow: 0 16px 40px rgba(0,0,0,.22); }
+    .card h2 { margin-top: 0; font-size: 1.3rem; }
+    .card p { color: #bdc6d8; line-height: 1.55; min-height: 5.2em; }
+    .button { display: inline-block; text-decoration: none; font-weight: 750; padding: 12px 16px; border-radius: 10px; background: #f4f6fb; color: #11151d; }
+    .button:hover { transform: translateY(-1px); }
+    footer { margin-top: 44px; color: #8f9ab0; font-size: .95rem; }
+    footer a { color: #cbd5e8; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>MMALS Geometric Path Memory</h1>
+  <p class="lead">A reproducible engineering study translating Lindblad-Uhlmann open-system geometry into path-sensitive continual learning, domain-shift diagnostics, and evidence-aware AI systems.</p>
+  <section class="grid">
+    <article class="card">
+      <h2>Compiled report</h2>
+      <p>Read the full mathematical critique, engineer view, 12-year-old explanation, applications, and research roadmap.</p>
+      <a class="button" href="report/Geometric_Path_Memory.pdf">Open PDF</a>
+    </article>
+    <article class="card">
+      <h2>Open Quantum Order Lab</h2>
+      <p>Compare rotation-then-damping with damping-then-rotation and inspect how operation order changes the resulting trajectory.</p>
+      <a class="button" href="tools/open_quantum_order_lab.html">Launch tool</a>
+    </article>
+    <article class="card">
+      <h2>MMALS Path Memory Lab</h2>
+      <p>Explore tangent and transverse representation change, entropy, non-commutativity, and routing recommendations.</p>
+      <a class="button" href="tools/mmals_path_memory_lab.html">Launch tool</a>
+    </article>
+  </section>
+  <footer>Source repository: <a href="https://github.com/gharbonnier78/mmals-geometric-path-memory">gharbonnier78/mmals-geometric-path-memory</a></footer>
+</main>
+</body>
+</html>

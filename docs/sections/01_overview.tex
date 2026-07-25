@@ -1,0 +1,95 @@
+\section{Decision summary}
+
+\subsection{What should be retained}
+
+The reviewed work combines GKSL/Lindblad dynamics, coadjoint-orbit geometry, and Uhlmann parallel transport \citep{lindblad1976,gorini1976,uhlmann1986,uhlmann1991,souriau1969}. Its most reusable insights are:
+
+\begin{enumerate}[label=\arabic*.]
+  \item Separate motion that preserves structural invariants from motion that changes them.
+  \item Do not confuse an endpoint statistic with a path-dependent statistic.
+  \item Measure whether operations commute; order sensitivity can reveal hidden interference.
+  \item Treat symmetry breaking as an observable structural event, not merely as scalar degradation.
+\end{enumerate}
+
+\subsection{What must be corrected}
+
+Before using the manuscript as a formal foundation, at least five points require revision:
+
+\begin{enumerate}[label=\arabic*.]
+  \item For degenerate spectra, tangency must be expressed with spectral projectors, not only diagonal entries.
+  \item The dissipator is not generically a purely normal vector; it may contain tangent and transverse components.
+  \item A coadjoint orbit fixes the full spectrum; an entropy level set usually does not.
+  \item A path-dependent holonomy is a compressed signature, not a lossless chronological ledger.
+  \item The proposed curvature ``if and only if'' statement requires a more complete proof and explicit counterexample search.
+\end{enumerate}
+
+\subsection{Recommended action}
+
+\begin{researchbox}
+Create a new MMALS research track called \textbf{MMALS-Holo: Path-Sensitive Geometric Memory for Continual Learning}. Use normalized representation covariances as density-like operators, measure tangent and transverse evolution, perform curriculum-order experiments, and compare predictive power for future forgetting against MMD, Fisher-Rao/Bures, router energy, and standard representation-similarity baselines.
+\end{researchbox}
+
+\section{The idea at three levels}
+
+\subsection{The 12-year-old view}
+
+\begin{kidbox}
+Imagine a marble inside a set of transparent nested shells. A gentle motor can move the marble around on the same shell. A different machine can push it through one shell into another. Looking only at the marble's final position may not tell you which machines acted, or in which order. Turning first and squeezing second can produce a different result from squeezing first and turning second.
+
+For MMALS, each specialist is like a learned shell. A small turn means the specialist can adapt. A strong push through shells may mean that the system needs a new specialist, must divide an existing one, or must protect old knowledge before learning more.
+\end{kidbox}
+
+\subsection{The engineer view}
+
+\begin{engineerbox}
+Represent the system by a positive, trace-normalized matrix $\rho_t$. Its eigenvectors encode principal directions; its eigenvalues encode how capacity, variance, or probability is distributed across those directions. A local change $\Delta\rho_t$ can be decomposed relative to the current spectral blocks:
+\[
+\Delta\rho_t = \Delta\rho_t^{\parallel} + \Delta\rho_t^{\perp}.
+\]
+The cross-block part is tangent to the unitary orbit. The block-diagonal part changes spectral structure or acts inside degenerate subspaces. Separately, compare compositions $A\circ B$ and $B\circ A$. A large endpoint gap indicates order-sensitive interference that a scalar endpoint KPI can miss.
+\end{engineerbox}
+
+\subsection{The mathematical view}
+
+Let $\rhoop$ be a full-rank density operator on an $n$-dimensional Hilbert space. The unitary group acts by conjugation,
+\[
+\rhoop \mapsto U\rhoop U^\dagger.
+\]
+The corresponding coadjoint orbit contains operators with the same spectrum. Its tangent space can be written
+\[
+T_{\rhoop}\mathcal{O}_{\rhoop}=\{-i[K,\rhoop] : K=K^\dagger\}.
+\]
+Under GKSL dynamics,
+\begin{equation}
+\dot{\rhoop}=-i[H,\rhoop]+\sum_k\gamma_k\left(L_k\rhoop L_k^\dagger-\frac12\{L_k^\dagger L_k,\rhoop\}\right),
+\label{eq:gksl}
+\end{equation}
+we denote the Hamiltonian term by $X_H$ and the dissipative term by $X_D$. The Hamiltonian term is orbit-tangent. The dissipative term must be decomposed rather than automatically identified with the normal space.
+
+\section{Reviewed manuscript: contribution map}
+
+The manuscript \citep{elmorsalani2026} proposes a synthesis with four principal claims:
+
+\begin{enumerate}[label=\textbf{C\arabic*.}]
+  \item A geometric obstruction prevents generic dissipative paths from being represented by purely unitary horizontal lifts.
+  \item Uhlmann curvature encodes the interaction between coherent and dissipative motion.
+  \item Entropy production and transverse motion share a geometric origin.
+  \item Dissipation can reduce a non-Abelian stabilizer, for example $U(2)$ to $U(1)\times U(1)$ in a qutrit example.
+\end{enumerate}
+
+The work also sketches an ancilla-assisted interferometric readout under noise. The conceptual direction is interesting because it asks for an operational observable rather than stopping at geometric language. The practical claims, however, require a stronger experimental protocol, a complete noise budget, identifiability analysis, and a clearer distinction between the proposed observable and existing mixed-state phase schemes.
+
+\begin{table}[H]
+\centering
+\caption{Separation of knowledge layers}
+\begin{tabularx}{\textwidth}{p{0.19\textwidth} X X}
+\toprule
+\textbf{Layer} & \textbf{Content} & \textbf{Status in this package} \\
+\midrule
+Established background & GKSL dynamics, density matrices, unitary orbits, Uhlmann transport, Bures geometry & Used as standard theory with references \\
+Source claims & Obstruction theorem, curvature-dissipation equivalence, thermodynamic leaf identification, gauge reduction & Reviewed critically; not assumed proven \\
+Engineering proposal & Covariance density operators, tangent/transverse MMALS diagnostics, curriculum-order metrics & New hypotheses with executable validation plan \\
+\bottomrule
+\end{tabularx}
+\end{table}
+

@@ -1,0 +1,127 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,margin=2.15cm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb,mathtools,bm}
+\usepackage{booktabs,tabularx,longtable,array,multirow}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,shapes.geometric,decorations.pathreplacing}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage[nameinlink,noabbrev]{cleveref}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{setspace}
+
+\definecolor{Navy}{HTML}{14243E}
+\definecolor{Blue}{HTML}{1C6F9F}
+\definecolor{Sky}{HTML}{D9ECF8}
+\definecolor{Gold}{HTML}{D69B2D}
+\definecolor{Warm}{HTML}{FFF5DF}
+\definecolor{Red}{HTML}{A83E45}
+\definecolor{Green}{HTML}{31735C}
+\definecolor{LightGray}{HTML}{F2F4F7}
+\definecolor{MidGray}{HTML}{5D6D84}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=Navy,
+  citecolor=Blue,
+  urlcolor=Blue,
+  pdftitle={Geometric Path Memory},
+  pdfauthor={Guillaume Harbonnier}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Geometric Path Memory}
+\rhead{MMALS Engineering Package}
+\cfoot{\thepage}
+
+\newcommand{\rhoop}{\bm{\rho}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\parallelpart}{\parallel}
+\newcommand{\perppart}{\perp}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Hspace}{\mathcal{H}}
+
+\newtcolorbox{executivebox}{
+  breakable, enhanced, colback=Sky, colframe=Blue,
+  title=Executive point, fonttitle=\bfseries, boxrule=0.8pt, arc=2mm
+}
+\newtcolorbox{kidbox}{
+  breakable, enhanced, colback=Warm, colframe=Gold,
+  title=12-year-old view, fonttitle=\bfseries, boxrule=0.8pt, arc=2mm
+}
+\newtcolorbox{engineerbox}{
+  breakable, enhanced, colback=LightGray, colframe=Navy,
+  title=Engineer view, fonttitle=\bfseries, boxrule=0.8pt, arc=2mm
+}
+\newtcolorbox{criticalbox}{
+  breakable, enhanced, colback=red!3, colframe=Red,
+  title=Critical correction, fonttitle=\bfseries, boxrule=0.8pt, arc=2mm
+}
+\newtcolorbox{researchbox}{
+  breakable, enhanced, colback=green!4, colframe=Green,
+  title=Research hypothesis to validate, fonttitle=\bfseries, boxrule=0.8pt, arc=2mm
+}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  frame=single,
+  rulecolor=\color{MidGray},
+  backgroundcolor=\color{LightGray},
+  breaklines=true,
+  columns=fullflexible,
+  showstringspaces=false,
+  keywordstyle=\color{Blue}\bfseries,
+  commentstyle=\color{Green},
+  stringstyle=\color{Red}
+}
+
+\title{\vspace{-1.2cm}\textbf{Geometric Path Memory}\\[0.3cm]
+\Large From Lindblad-Uhlmann Open Quantum Dynamics to MMALS and Engineering Systems}
+\author{Guillaume Harbonnier\\\small Critical review, corrected mathematical framing, interactive experiments, and implementation blueprint}
+\date{25 July 2026\\\small Version 0.1.0}
+
+\begin{document}
+\maketitle
+\begin{center}
+\begin{minipage}{0.92\textwidth}
+\small
+\textbf{Suggested GitHub repository:} \texttt{mmals-geometric-path-memory}\\
+\textbf{Short description:} A reproducible engineering study and interactive lab translating Lindblad-Uhlmann open-system geometry into path-sensitive continual learning, domain-shift diagnostics, and evidence-aware AI systems.
+\end{minipage}
+\end{center}
+
+\begin{executivebox}
+This package extracts a valuable idea from the reviewed manuscript: the current state of a system and the path used to reach it are different sources of information. It then corrects several mathematical overstatements and turns the remaining structure into an engineering program. The priority application is MMALS: distinguish reorientation inside an existing regime from structural change that may justify rerouting, host creation, host splitting, replay protection, or human review.
+\end{executivebox}
+
+\vspace{0.2cm}
+\noindent\textbf{Scientific status.} This document is neither an endorsement nor a rejection of the source manuscript \citep{elmorsalani2026}. It separates established background, claims made in that manuscript, identified proof obligations, and new engineering hypotheses. Numerical demonstrations support reproducibility and intuition; they do not replace mathematical proof or physical validation.
+
+\tableofcontents
+\newpage
+
+\input{sections/01_overview}
+\input{sections/02_geometry_and_corrections}
+\input{sections/03_engineering_and_mmals}
+\input{sections/04_applications_and_tools}
+\input{sections/05_reproducibility_and_roadmap}
+\input{sections/06_appendices}
+\input{sections/07_bibliography}
+\end{document}

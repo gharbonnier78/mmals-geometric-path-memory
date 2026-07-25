@@ -1,0 +1,66 @@
+\appendix
+\section{Notation}
+
+\begin{longtable}{p{0.18\textwidth} p{0.72\textwidth}}
+\toprule
+$\rhoop$ & Density operator or density-like normalized positive operator \\
+$X_H$ & Hamiltonian, orbit-tangent component of GKSL dynamics \\
+$X_D$ & Dissipative component of GKSL dynamics \\
+$P_a$ & Projector onto a distinct spectral eigenspace \\
+$\Delta Q^{\parallel}$ & Cross-spectral-block, tangent-like change \\
+$\Delta Q^{\perp}$ & Spectral-block, structural-change component \\
+$G$ & Hermitian solution of the Lyapunov equation $G\rhoop+\rhoop G=\dot\rhoop$ \\
+$U_{\mathrm{hol}}$ & Uhlmann holonomy or discrete transport factor for a closed path \\
+$S(\rhoop)$ & Von Neumann entropy \\
+$E_\perp$ & Integrated transverse energy \\
+$O_{\mathrm{end}}$ & Endpoint order gap \\
+\bottomrule
+\end{longtable}
+
+\section{Implementation formulas}
+
+\subsection{Qubit rotation around the x axis}
+
+\[
+U_x(\theta)=\cos\frac\theta2 I-i\sin\frac\theta2\sigma_x.
+\]
+
+\subsection{Amplitude-damping Kraus operators}
+
+\[
+K_0=\begin{pmatrix}1&0\\0&\sqrt{1-p}\end{pmatrix},\qquad
+K_1=\begin{pmatrix}0&\sqrt p\\0&0\end{pmatrix},
+\]
+\[
+\mathcal E_p(\rhoop)=K_0\rhoop K_0^\dagger+K_1\rhoop K_1^\dagger.
+\]
+
+\subsection{Qubit trace distance}
+
+For Bloch vectors $r$ and $s$,
+\[
+D(\rho_r,\rho_s)=\frac12\norm{r-s}_2.
+\]
+
+\subsection{Discrete Uhlmann alignment}
+
+For consecutive states,
+\[
+\sqrt{\rho_{k+1}}\sqrt{\rho_k}=U_kP_k,
+\]
+with $P_k\succeq0$. The ordered transport factor is
+\[
+U_{\mathrm{path}}=U_{N-1}\cdots U_1U_0.
+\]
+For an open path this is a transport factor; for a closed path it approximates a holonomy under the selected discretization and convention.
+
+\section{Suggested next repository milestones}
+
+\begin{enumerate}
+  \item Tag \texttt{v0.1.0}: report, two tools, two notebooks, tested geometry API.
+  \item Tag \texttt{v0.2.0}: RotatedMNIST and PermutedMNIST order benchmark.
+  \item Tag \texttt{v0.3.0}: MMALS router integration and replay intervention study.
+  \item Tag \texttt{v0.4.0}: Fisher/Bures/MMD comparison and uncertainty calibration.
+  \item Tag \texttt{v1.0.0}: reproducible multi-dataset evidence and publication package.
+\end{enumerate}
+

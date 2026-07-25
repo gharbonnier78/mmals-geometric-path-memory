@@ -1,0 +1,127 @@
+\section{Repository architecture and reproducibility}
+
+\begin{verbatim}
+mmals-geometric-path-memory/
+|-- README.md
+|-- CITATION.cff
+|-- LICENSE
+|-- pyproject.toml
+|-- Makefile
+|-- docs/
+|   |-- main.tex
+|   |-- references.bib
+|   `-- Geometric_Path_Memory.pdf
+|-- notebooks/
+|   |-- 01_open_quantum_geometry.ipynb
+|   `-- 02_mmals_path_memory.ipynb
+|-- tools/
+|   |-- open_quantum_order_lab.html
+|   `-- mmals_path_memory_lab.html
+|-- src/mmals_path_memory/
+|   |-- geometry.py
+|   `-- mmals.py
+|-- tests/
+|-- scripts/
+`-- .github/workflows/ci.yml
+\end{verbatim}
+
+\subsection{Core API}
+
+\begin{lstlisting}[language=Python,caption={Core transition diagnosis}]
+from mmals_path_memory.mmals import covariance_density, diagnose_transition
+
+rho_before = covariance_density(features_before)
+rho_after = covariance_density(features_after)
+result = diagnose_transition(rho_before, rho_after)
+
+print(result.transverse_ratio)
+print(result.recommendation)
+\end{lstlisting}
+
+\subsection{Quality gates}
+
+The CI pipeline should enforce:
+
+\begin{itemize}
+  \item unit tests for positivity, trace normalization, decomposition reconstruction, and transport unitarity;
+  \item static validation of offline HTML assets;
+  \item LaTeX compilation;
+  \item artifact upload of the compiled report;
+  \item no hidden dependency on the source PDF.
+\end{itemize}
+
+\section{Validation strategy}
+
+\subsection{Mathematical validation}
+
+\begin{enumerate}
+  \item Derive the spectral-projector decomposition rigorously.
+  \item Verify the commutator-image characterization under degeneracy.
+  \item Check the horizontal-lift convention against standard Uhlmann formulations.
+  \item Re-derive curvature expressions from the connection form.
+  \item Construct symbolic counterexample searches for claimed equivalences.
+\end{enumerate}
+
+\subsection{Numerical validation}
+
+\begin{enumerate}
+  \item Compare exact qubit channels with numerical integration.
+  \item Check convergence of discrete transport as path resolution increases.
+  \item Test sensitivity near rank-deficient states.
+  \item Bootstrap latent covariance estimates under finite data.
+  \item Evaluate false regime-split alerts under pure rotations.
+  \item Evaluate missed structural changes under trace-preserving anisotropic transformations.
+\end{enumerate}
+
+\subsection{Product and decision validation}
+
+A geometric metric is valuable only if it changes a real decision and improves outcomes. For MMALS, the relevant utility function may be
+\[
+U=\alpha\,\mathrm{retention}+\beta\,\mathrm{transfer}-\gamma\,\mathrm{compute}-\delta\,\mathrm{memory}-\eta\,\mathrm{false\ splits}.
+\]
+For Test Authority, utility concerns escaped risk, evidence cost, cycle time, and decision confidence. For fraud, utility must include false accusations, exclusion risk, explainability, and human-review capacity.
+
+\section{Risks and limitations}
+
+\begin{enumerate}
+  \item \textbf{Metaphor risk.} Quantum geometry can become decorative jargon. Every imported concept must correspond to a measurable engineering object and a falsifiable benefit.
+  \item \textbf{Estimation risk.} Covariance operators are noisy in high dimension. Shrinkage, low-rank approximation, and confidence intervals are necessary.
+  \item \textbf{Degeneracy instability.} Near-equal eigenvalues make spectral projectors sensitive. Use tolerances, subspace tracking, and perturbation analysis.
+  \item \textbf{Computational cost.} Full $d\times d$ operators are expensive. Use sketches, block structure, prototypes, or low-rank factorizations.
+  \item \textbf{Causal overreach.} A path metric can correlate with forgetting without causing it.
+  \item \textbf{Decision harm.} In identity and workforce contexts, geometry must not automate adverse decisions without explainable evidence and human safeguards.
+  \item \textbf{Source maturity.} The reviewed manuscript contains promising synthesis but unresolved mathematical claims.
+\end{enumerate}
+
+\section{Twelve-week implementation roadmap}
+
+\begin{longtable}{p{0.10\textwidth} p{0.27\textwidth} p{0.29\textwidth} p{0.24\textwidth}}
+\caption{Proposed execution plan}\label{tab:roadmap}\\
+\toprule
+\textbf{Weeks} & \textbf{Build} & \textbf{Experiment} & \textbf{Exit evidence} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Weeks} & \textbf{Build} & \textbf{Experiment} & \textbf{Exit evidence} \\
+\midrule
+\endhead
+1--2 & Finalize mathematical corrections and API & Qubit and synthetic covariance validation & Unit tests and reviewed derivation \\
+3--4 & Integrate covariance-density hooks into MMALS & RotatedMNIST order permutations & Baseline comparison and false-alert analysis \\
+5--6 & Add Fisher/Bures and MMD baselines & PermutedMNIST and SplitCIFAR-10 & Predictive value for forgetting \\
+7--8 & Add router decision fusion & SplitCIFAR-100 and host split/merge ablations & Retention-cost Pareto curves \\
+9--10 & Add low-rank approximation and calibration & CORe50 drift and finite-sample bootstrap & Scalability and confidence intervals \\
+11 & EO/IR synthetic fault-sequence pilot & Same endpoint, different fault order & Diagnostic lift over CEP/Fisher/MMD alone \\
+12 & Consolidate paper, package, and decision memo & Reproducibility rerun & Versioned release candidate \\
+\bottomrule
+\end{longtable}
+
+\section{Conclusion}
+
+The reviewed manuscript points toward a genuinely useful distinction: state and trajectory are not interchangeable. Its strongest formal claims need correction and proof reinforcement, especially around degeneracy, tangent/normal decomposition, entropy leaves, and curvature equivalence. Once corrected, the framework becomes a productive engineering research program.
+
+The most immediate opportunity is MMALS-Holo. A normalized representation covariance can expose orientation and spectral allocation; local projectors can separate tangent-like adaptation from structural change; operation-order tests can quantify curriculum interference; and these signals can be evaluated against real retention and cost outcomes. EO/IR, identity fraud, and Test Authority then become secondary applications of the same path-aware systems pattern.
+
+\begin{executivebox}
+The recommendation is to proceed as an experimentally governed MMALS extension, not as a claim that continual learning is quantum mechanics. The package is ready for repository creation, CI execution, numerical extension, and integration into the broader MMALS and geometric-information roadmap.
+\end{executivebox}
+
