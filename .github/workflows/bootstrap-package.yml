@@ -16,11 +16,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Reconstruct package archive
+      - name: Reconstruct source package
         run: |
           cat .bootstrap/package.b64.part-* > /tmp/mmals-package.b64
           base64 --decode /tmp/mmals-package.b64 > /tmp/mmals-package.tar.xz
-          echo "1c18cc4b91611a0a2b914cf424e4ee74d21d342bb35245f5c979587ef2147604  /tmp/mmals-package.tar.xz" | sha256sum --check -
+          echo "8691e036d6d9be216f56c10cb14edac8ff13ffeccb5337bf78417fb074ba587b  /tmp/mmals-package.tar.xz" | sha256sum --check -
           mkdir -p /tmp/mmals-package
           tar -xJf /tmp/mmals-package.tar.xz -C /tmp/mmals-package
       - name: Import repository contents
